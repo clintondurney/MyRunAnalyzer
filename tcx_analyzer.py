@@ -10,12 +10,10 @@ import matplotlib.dates
 #
 # 
 #
-# Last Update: May 29, 2014
+# Last Update: June 13, 2014
 # Status:  None
 #   Goals:
-#   1. Plots: Distance vs. Time, Elevation vs. Time, Pace vs. Distance/Time, etc.
-#   2.
-#   3.
+#   1. 
 ##########
 
 def HMS(seconds, pos):
@@ -65,11 +63,19 @@ with open("Sample2.csv",'rb') as f:
     pl.ylabel("Distance (mi)")
     pl.xlim([0,data['ElapsedTime'][-1]])
 
+# Pace vs. Time
+    fig = pl.figure()
+    ax4 = fig.add_subplot(111)
+    ax4.plot(data['ElapsedTime'], data['Pace'], color='r')
+    ax4 = pl.gca()
+    ax4.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
+    ax4.yaxis.set_major_formatter(pl.FuncFormatter(HMS))
+    pl.xlabel("Time") 
+    pl.ylabel("Pace")
+    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.ylim([240,600])
 pl.show()
    
-
-
-
 
 
 
