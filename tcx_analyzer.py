@@ -1,4 +1,5 @@
 import csv
+import sys
 import numpy as np
 import pylab as pl
 import matplotlib.dates 
@@ -6,14 +7,14 @@ import matplotlib.dates
 ##########
 # tcx_analyzer.py 
 #  
-# Accepts as input a .csv file formatted as 
-#
+# Accepts as input a .csv file formatted at function call
+# Example: python tcx_analyzer Sample.tcx
 # 
 #
-# Last Update: June 13, 2014
-# Status:  None
-#   Goals:
-#   1. 
+# Last Update: June 25, 2014
+# Status:  Working
+#   
+# 
 ##########
 
 def HMS(seconds, pos):
@@ -27,8 +28,21 @@ def HMS(seconds, pos):
     else: 
         return "%d:%02d:%02d" % (hours, minutes,seconds)
 
+def smoothTriangle(data,degree,dropVals=False):
+#performs moving triangle smoothing with a variable degree.
+#note that if dropVals is False, output length will be identical
+#to input length, but with copies of data at the flanking regions
+    triangle=np.array(range(degree)+[degree]+range(degree)[::-1])+1
+    smoothed=[]
+    for i in range(degree,len(data)-degree*2):
+        point=data[i:i+len(triangle)]*triangle
+        smoothed.append(sum(point)/sum(triangle))
+    if dropVals: return smoothed
+    smoothed=[smoothed[0]]*(degree+degree/2)+smoothed
+    while len(smoothed)<len(data):smoothed.append(smoothed[-1])
+    return smoothed
 
-with open("Sample2.csv",'rb') as f:
+with open(sys.argv[-1],'rb') as f:
     data = np.genfromtxt(f, delimiter=',', names=True)
    
 # Elevation vs. Distance 
@@ -73,10 +87,42 @@ with open("Sample2.csv",'rb') as f:
     pl.xlabel("Time") 
     pl.ylabel("Pace")
     pl.xlim([0,data['ElapsedTime'][-1]])
-    pl.ylim([240,600])
-pl.show()
-   
+    pl.ylim([240,1000])
 
+### GRAPH ORIGINAL/SMOOTHED DATA ###
+    fig = pl.figure()
+    pl.title("Moving Triangle Smoothing")
+    ax5 = fig.add_subplot(111)
+    pl.plot(data['ElapsedTime'],smoothTriangle(data['Pace'],10),label="smoothed d=10",color='r')
+    ax5 = pl.gca()
+    ax5.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
+    ax5.yaxis.set_major_formatter(pl.FuncFormatter(HMS))
+    pl.xlabel("Time") 
+    pl.ylabel("Pace")
+    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.ylim([240,1000])
+    pl.legend()
+
+file = open(sys.argv[-1],'rb')
+reader = csv.reader(file)
+header = reader.next()
+if 'Pulse' in header:
+    file.close() 
+    with open(sys.argv[-1],'rb') as f:
+        data = np.genfromtxt(f, delimiter=',', names=True)
+        # Heart Rate vs. Time
+        fig = pl.figure()
+        ax6 = fig.add_subplot(111)
+        ax6.plot(data['ElapsedTime'], data['Pulse'], color='r')
+        ax6 = pl.gca()
+        ax6.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
+        pl.xlabel("Time") 
+        pl.ylabel("Heart Rate")
+        pl.xlim([0,data['ElapsedTime'][-1]])
+        pl.ylim([40,190])
+
+
+pl.show()
 
 
 

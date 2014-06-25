@@ -7,14 +7,14 @@ import numpy as np
 ##########
 # tcx_extractor.py 
 #  
-# Accepts as input a .tcx file and converts extracts the lap, time stamp
-# distance (meters), Latitude and Longitude into a .csv file.
-#
+# Accepts as input a .tcx file and converts extracts the desired
+# fields of interest to be analyzed later.  Ouput is a csv file.
 # 
 #
-# Last Update: June 13, 2014
+# Last Update: June 25, 2014
 # Status:  Added Pace to csv output 
-#   
+# Goals: 
+#        add cadence to csv output
 # 
 ##########
 
@@ -66,24 +66,50 @@ def Working(activity, start_time):
 		data.append(trackpoint.Position.LongitudeDegrees.pyval)
 		data_old = data
 		writer.writerow(data)
+
+def WorkingPulse(activity, start_time):
+    for lap_counter,lap in enumerate(activity.Lap, start=1):
+        print lap_counter, lap.TotalTimeSeconds.pyval, meters_to_miles(lap.DistanceMeters.pyval)
+        data_old = [0,0,0,0,0,0,0]
+        for trackpoint in lap.Track.Trackpoint:
+            data = [lap_counter]
+	    if hasattr(trackpoint, 'DistanceMeters') == True:
+                next_time = time.mktime(datetime.datetime.strptime(trackpoint.Time.pyval[11:-5], "%H:%M:%S").timetuple())
+	        data.append(hms_to_seconds(str(datetime.timedelta(seconds = next_time - start_time))))
+                data.append(meters_to_miles(trackpoint.DistanceMeters.pyval))
+                data.append(Pace(data_old[1],data[1],data_old[2],data[2]))
+		data.append(meters_to_feet(trackpoint.AltitudeMeters.pyval))
+		data.append(trackpoint.Position.LatitudeDegrees.pyval)
+		data.append(trackpoint.Position.LongitudeDegrees.pyval)
+	        if hasattr(trackpoint,'HeartRateBpm') == True:
+                    data.append(trackpoint.HeartRateBpm.Value.pyval)
+                else:
+                    data.append(int(0))
+                data_old = data
+		writer.writerow(data)
 #######################################
 
 ###########
 #
 ############
-with open("Sample2.tcx") as f:
-    with open("Sample2.csv", "w") as o:
+with open("Sample.tcx") as f:
+    with open("Sample.csv", "w") as o:
         # get a csv writer
         writer = csv.writer(o)
         # write the header file
-        writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude"))
+        # writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude"))
         tree = objectify.parse(f)
         root = tree.getroot()
         activity = root.Activities.Activity
         s = activity.Lap.Track.Trackpoint.Time.pyval
         start_time = time.mktime(datetime.datetime.strptime(s[11:-5], "%H:%M:%S").timetuple())
-
-        Working(activity, start_time)
+        
+        if hasattr(activity.Lap,'AverageHeartRateBpm') == True:
+            writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude","Pulse"))
+            WorkingPulse(activity, start_time)
+        else:
+            writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude"))
+            Working(activity, start_time)
 
 
 
