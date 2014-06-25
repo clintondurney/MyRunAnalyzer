@@ -13,6 +13,8 @@ This project's goals are to:
 
 3.  Become better at analyzing data through calculations and data presentation.
 
-4.  Connect with skilled programmers who can critique my code and help when I am stuck.
+4.  Connect with skilled programmers who can critique my code and help.
+
+5.  Any comments, criticisms or requests are welcome.
 
 
