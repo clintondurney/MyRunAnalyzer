@@ -1,4 +1,5 @@
 import csv
+import sys
 from lxml import objectify, etree
 import datetime 
 import time
@@ -92,8 +93,8 @@ def WorkingPulse(activity, start_time):
 ###########
 #
 ############
-with open("Sample.tcx") as f:
-    with open("Sample.csv", "w") as o:
+with open(sys.argv[1],'r') as f:
+    with open(sys.argv[2], "w") as o:
         # get a csv writer
         writer = csv.writer(o)
         # write the header file
