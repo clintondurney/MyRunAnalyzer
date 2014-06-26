@@ -114,15 +114,17 @@ with open(sys.argv[1],'rb') as f:
 #        pl.ylim([240,720])
         pl.legend()
 
-file = open(sys.argv[1],'rb')
-reader = csv.reader(file)
-header = reader.next()
-if 'Pulse' in header:
-    file.close() 
-    with open(sys.argv[1],'rb') as f:
+    if raw_input('Pace Distribution: ').lower() == ('y' or 'yes'):
+        fig = pl.figure()
+        ax9 = fig.add_subplot(111)
+        num_bins = 50
+        ax9.hist(data['Pace'],num_bins)
+        ax9.xaxis.set_major_formatter(pl.FuncFormatter(HMS))
+        pl.xlabel("Pace")
+
+    if int(max_hr) != int(1):
         if raw_input('Plot Pulse vs. Time: ').lower() == ('y' or 'yes'):
-            data = np.genfromtxt(f, delimiter=',', names=True)
-        # Heart Rate vs. Time
+            # Heart Rate vs. Time
             fig = pl.figure()
             ax6 = fig.add_subplot(111)
             ax6.plot(data['ElapsedTime'], data['Pulse'], color='r')
@@ -144,13 +146,27 @@ if 'Pulse' in header:
             pl.ylim([40,190])
 
 
+        if raw_input('Pulse Distribution: ').lower() == ('y' or 'yes'):
+            fig = pl.figure()
+            ax8 = fig.add_subplot(111)
+            num_bins = 50 
+            ax8.hist(np.trim_zeros(data['Pulse']),num_bins)
+            pl.xlabel("Pulse")
+            pl.xlim([40,190])
+            pl.title("Distribution of Pulse")
+
+
 pl.show()
 
 print "Total Distance = ", total_distance, " miles"
 print "Total Time = ", HMS(total_time,1)
 print "Average Pace = ", HMS(avg_pace,1)
-print "Minimum Heart Rate = ", int(min_hr)
-print "Maximum Heart Rate = ", int(max_hr)
-print "Average Heart Rate = ", int(round(avg_hr))
-
+if int(max_hr) == 1:
+    print "Minimum Heart Rate = -"
+    print "Maximum Heart Rate = -"
+    print "Average Heart Rate = -"
+else:
+    print "Minimum Heart Rate = ", int(min_hr)
+    print "Maximum Heart Rate = ", int(max_hr)
+    print "Average Heart Rate = ", int(round(avg_hr))
 

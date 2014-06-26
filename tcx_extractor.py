@@ -69,7 +69,8 @@ def Working(activity, start_time):
 		data.append(meters_to_feet(trackpoint.AltitudeMeters.pyval))
 		data.append(trackpoint.Position.LatitudeDegrees.pyval)
 		data.append(trackpoint.Position.LongitudeDegrees.pyval)
-		data_old = data
+		data.append(int(1))
+                data_old = data
 		writer.writerow(data)
 
 def WorkingPulse(activity, start_time):
@@ -113,7 +114,7 @@ with open(sys.argv[1],'r') as f:
             writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude","Pulse"))
             WorkingPulse(activity, start_time)
         else:
-            writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude"))
+            writer.writerow(("Lap", "ElapsedTime", "Distance", "Pace", "Altitude", "Latitude", "Longitude","Pulse"))
             Working(activity, start_time)
 
 
