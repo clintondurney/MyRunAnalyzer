@@ -45,6 +45,14 @@ def smoothTriangle(data,degree,dropVals=False):
 with open(sys.argv[1],'rb') as f:
     data = np.genfromtxt(f, delimiter=',', names=True)
    
+# Calculate certain metrics with file open and save for later use
+    total_time = data['ElapsedTime'][-1]
+    total_distance = data['Distance'][-1]
+    avg_pace = np.mean(data['Pace'])
+    max_hr = max(data['Pulse'])
+    min_hr = np.min(data['Pulse'][np.nonzero(data['Pulse'])])
+    avg_hr = np.mean(data['Pulse'][np.nonzero(data['Pulse'])])
+
 # Elevation vs. Distance 
     if raw_input('Plot Elevation vs. Distance: ').lower() == ('y' or 'yes'):
         fig = pl.figure()
@@ -138,9 +146,11 @@ if 'Pulse' in header:
 
 pl.show()
 
-
-
-
-
+print "Total Distance = ", total_distance, " miles"
+print "Total Time = ", HMS(total_time,1)
+print "Average Pace = ", HMS(avg_pace,1)
+print "Minimum Heart Rate = ", int(min_hr)
+print "Maximum Heart Rate = ", int(max_hr)
+print "Average Heart Rate = ", int(round(avg_hr))
 
 
