@@ -30,8 +30,12 @@ def hms_to_seconds(time):
     return 3600*h + 60*m + s
 
 def Pace(t_1,t_2,d_1,d_2):
-# Returns the awkward pace of seconds per mile
-    return (t_2-t_1)/((d_2-d_1)) 
+# Returns the (awkward) pace of seconds per mile
+# which is useful later.
+    if (d_2-d_1) == 0 or (t_2-t_1)/((d_2-d_1)) > 720:
+        return 720
+    else:
+        return (t_2-t_1)/((d_2-d_1)) 
 
 
 

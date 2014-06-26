@@ -11,7 +11,7 @@ import matplotlib.dates
 # Example: python tcx_analyzer Sample.tcx
 # 
 #
-# Last Update: June 25, 2014
+# Last Update: June 26, 2014
 # Status:  Working
 #   
 # 
@@ -42,7 +42,7 @@ def smoothTriangle(data,degree,dropVals=False):
     while len(smoothed)<len(data):smoothed.append(smoothed[-1])
     return smoothed
 
-with open(sys.argv[-1],'rb') as f:
+with open(sys.argv[1],'rb') as f:
     data = np.genfromtxt(f, delimiter=',', names=True)
    
 # Elevation vs. Distance 
@@ -87,7 +87,7 @@ with open(sys.argv[-1],'rb') as f:
     pl.xlabel("Time") 
     pl.ylabel("Pace")
     pl.xlim([0,data['ElapsedTime'][-1]])
-    pl.ylim([240,1000])
+    pl.ylim([240,720])
 
 ### GRAPH ORIGINAL/SMOOTHED DATA ###
     fig = pl.figure()
@@ -100,15 +100,15 @@ with open(sys.argv[-1],'rb') as f:
     pl.xlabel("Time") 
     pl.ylabel("Pace")
     pl.xlim([0,data['ElapsedTime'][-1]])
-    pl.ylim([240,1000])
+    pl.ylim([240,720])
     pl.legend()
 
-file = open(sys.argv[-1],'rb')
+file = open(sys.argv[1],'rb')
 reader = csv.reader(file)
 header = reader.next()
 if 'Pulse' in header:
     file.close() 
-    with open(sys.argv[-1],'rb') as f:
+    with open(sys.argv[1],'rb') as f:
         data = np.genfromtxt(f, delimiter=',', names=True)
         # Heart Rate vs. Time
         fig = pl.figure()
