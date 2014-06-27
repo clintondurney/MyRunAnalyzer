@@ -54,41 +54,41 @@ def Elevation_vs_Distance(data):
 def Elevation_vs_Time(data):        
     fig = pl.figure()
     ax2 = fig.add_subplot(111)
-    ax2.plot(data['ElapsedTime'], data['Altitude'], color='r')
+    ax2.plot(data['MovingTime'], data['Altitude'], color='r')
     ax2 = pl.gca()
     ax2.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
     pl.xlabel("Time") 
     pl.ylabel("Elevation (ft.)")
-    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.xlim([0,data['MovingTime'][-1]])
     pl.ylim([0,1500])
 
 def Distance_vs_Time(data):
     fig = pl.figure()
     ax3 = fig.add_subplot(111)
-    ax3.plot(data['ElapsedTime'], data['Distance'], color='r')
+    ax3.plot(data['MovingTime'], data['Distance'], color='r')
     ax3 = pl.gca()
     ax3.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
     pl.xlabel("Time") 
     pl.ylabel("Distance (mi)")
-    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.xlim([0,data['MovingTime'][-1]])
 
 def Pace_vs_Time(data):
     fig = pl.figure()
     ax4 = fig.add_subplot(111)
-    ax4.plot(data['ElapsedTime'], data['Pace'], color='b')
+    ax4.plot(data['MovingTime'], data['Pace'], color='b')
     ax4 = pl.gca()
     ax4.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
     ax4.yaxis.set_major_formatter(pl.FuncFormatter(HMS))
     pl.xlabel("Time") 
     pl.ylabel("Pace")
-    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.xlim([0,data['MovingTime'][-1]])
     pl.ylim([240,720])
 
 ### GRAPH ORIGINAL/SMOOTHED DATA ###
 #    fig = pl.figure()
 #    pl.title("Moving Triangle Smoothing")
 #    ax5 = fig.add_subplot(111)
-    pl.plot(data['ElapsedTime'],smoothTriangle(data['Pace'],10),label="smoothed d=10",color='r')
+    pl.plot(data['MovingTime'],smoothTriangle(data['Pace'],10),label="smoothed d=10",color='r')
 #    ax5 = pl.gca()
 #    ax5.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
 #    ax5.yaxis.set_major_formatter(pl.FuncFormatter(HMS))
@@ -109,12 +109,12 @@ def Pace_Dist(data):
 def HR_vs_Time(data):
     fig = pl.figure()
     ax6 = fig.add_subplot(111)
-    ax6.plot(data['ElapsedTime'], data['Pulse'], color='r')
+    ax6.plot(data['MovingTime'], data['Pulse'], color='r')
     ax6 = pl.gca()
     ax6.xaxis.set_major_formatter(pl.FuncFormatter(HMS)) 
     pl.xlabel("Time") 
     pl.ylabel("Heart Rate")
-    pl.xlim([0,data['ElapsedTime'][-1]])
+    pl.xlim([0,data['MovingTime'][-1]])
     pl.ylim([40,190])
         
 def HR_Pace(data):
@@ -141,6 +141,7 @@ with open(sys.argv[1],'rb') as f:
    
 # Calculate certain metrics with file open and save for later use
     total_time = data['ElapsedTime'][-1]
+    moving_time = data['MovingTime'][-1]
     total_distance = data['Distance'][-1]
     avg_pace = np.mean(data['Pace'])
     max_hr = max(data['Pulse'])
@@ -154,7 +155,7 @@ with open(sys.argv[1],'rb') as f:
     if raw_input('Plot Distance vs. Time: ').lower() == ('y' or 'yes'):
  	Distance_vs_Time(data)       
     if raw_input('Plot Pace vs. Time: ').lower() == ('y' or 'yes'):
-	Distance_vs_Time(data)
+	Pace_vs_Time(data)
     if raw_input('Pace Distribution: ').lower() == ('y' or 'yes'):
         Pace_Dist(data)
     if int(max_hr) != int(1):
@@ -167,6 +168,7 @@ with open(sys.argv[1],'rb') as f:
 
 print "Total Distance = ", total_distance, " miles"
 print "Total Time = ", HMS(total_time,1)
+print "Moving Time = ", HMS(moving_time,1)
 print "Average Pace = ", HMS(avg_pace,1)
 if int(max_hr) == 1:
     print "Minimum Heart Rate = -"
