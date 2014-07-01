@@ -151,6 +151,7 @@ def tempo_analyzer(data, wanted, pace):
     indices = np.where(data['Lap'] == int(wanted))
     x = data['MovingTime'][indices]
     y = data['Pace'][indices]
+    pl.xlim([x[0],x[-1]])
     ax.plot(x, y, color='r')
     pl.axhline(y=pace, linewidth=2, color = 'k')
 
