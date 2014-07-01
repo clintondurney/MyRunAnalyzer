@@ -11,8 +11,7 @@ import matplotlib.dates
 # Example: python tcx_analyzer Sample.tcx
 # 
 #
-# Last Update: June 26, 2014
-# Status:  Working
+# Last Update: July 1, 2014
 #   
 # 
 ##########
@@ -27,6 +26,11 @@ def HMS(seconds, pos):
         return "%02d:%02d" % (minutes,seconds)
     else: 
         return "%d:%02d:%02d" % (hours, minutes,seconds)
+
+def pace_to_seconds(pace):
+    minutes = pace.split(':')[0].lstrip('0')
+    seconds = pace.split(':')[1]
+    return int(minutes)*60 + int(seconds)
 
 def smoothTriangle(data,degree,dropVals=False):
 #performs moving triangle smoothing with a variable degree.
@@ -136,6 +140,20 @@ def Pulse_Dist(data):
     pl.xlim([40,190])
     pl.title("Distribution of Pulse")
 
+def tempo_analyzer(data, wanted, pace):
+    fig = pl.figure()
+    ax = fig.add_subplot(111)
+    ax.xaxis.set_major_formatter(pl.FuncFormatter(HMS))
+    ax.yaxis.set_major_formatter(pl.FuncFormatter(HMS))
+    pl.title("Tempo Analyzer")
+    pl.xlabel("Time")
+    pl.ylabel("Pace")
+    indices = np.where(data['Lap'] == int(wanted))
+    x = data['MovingTime'][indices]
+    y = data['Pace'][indices]
+    ax.plot(x, y, color='r')
+    pl.axhline(y=pace, linewidth=2, color = 'k')
+
 with open(sys.argv[1],'rb') as f:
     data = np.genfromtxt(f, delimiter=',', names=True)
    
@@ -165,6 +183,10 @@ with open(sys.argv[1],'rb') as f:
 	    HR_Pace(data)
         if raw_input('Pulse Distribution: ').lower() == ('y' or 'yes'):
             Pulse_Dist(data)
+    if raw_input('Analyze tempo: ').lower() == ('y' or 'yes'):
+        wanted = raw_input('Which lap? ')
+        pace = raw_input('Goal pace in min/mile (Eg. 7:10): ')
+        tempo_analyzer(data, wanted, pace_to_seconds(pace))
 
 print "Total Distance = ", total_distance, " miles"
 print "Total Time = ", HMS(total_time,1)
@@ -178,6 +200,7 @@ else:
     print "Minimum Heart Rate = ", int(min_hr)
     print "Maximum Heart Rate = ", int(max_hr)
     print "Average Heart Rate = ", int(round(avg_hr))
+
 
 pl.show()
 
